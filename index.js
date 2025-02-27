@@ -1,5 +1,6 @@
 const express = require('express');
 const axios = require('axios');
+require("dotenv").config();
 const app = express();
 
 app.set('view engine', 'pug');
@@ -8,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // * Please DO NOT INCLUDE the private app access token in your repo. Don't do this practicum in your normal account.
-const PRIVATE_APP_ACCESS = '';
+const PRIVATE_APP_ACCESS = process.env.PRIVATE_APP_ACCESS;
 
 // TODO: ROUTE 1 - Create a new app.get route for the homepage to call your custom object data. Pass this data along to the front-end and create a new pug template in the views folder.
 
@@ -66,6 +67,55 @@ app.post('/update', async (req, res) => {
 });
 */
 
+// homepage
+app.get("/", async (req, res) => {
+    const artists = "https://api.hubapi.com/crm/v3/objects/2-139761465";
+    const params =
+      "?properties=name&properties=artist_type&properties=artist_work&associations=contacts&archived=false";
+  
+    const headers = {
+      Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
+      "Content-Type": "application/json",
+    };
+  
+    try {
+      const response = await axios.get(artists + params, { headers });
+      res.render("homepage", {
+        title: "Update Custom Object Form | Integrating With HubSpot I Practicum",
+        artists: response.data.results,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  });
+  
+  // update form view
+  app.get("/update-cobj", async (req, res) => {
+    console.log(PRIVATE_APP_ACCESS);
+    res.render("updates", {
+      title: "Update Custom Object Form | Integrating With HubSpot I Practicum.",
+    });
+  });
+  
+  // update post
+  app.post("/update-cobj", async (req, res) => {
+    const artists = "https://api.hubapi.com/crm/v3/objects/2-139761465";
+    const props = {
+      properties: req.body,
+    };
+  
+    const headers = {
+      Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
+      "Content-Type": "application/json",
+    };
+  
+    try {
+      const response = await axios.post(artists, props, { headers });
+      res.redirect("/?updated");
+    } catch (error) {
+      console.error(error);
+    }
+  });
 
 // * Localhost
 app.listen(3000, () => console.log('Listening on http://localhost:3000'));

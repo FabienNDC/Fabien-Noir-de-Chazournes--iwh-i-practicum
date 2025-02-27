@@ -10,7 +10,9 @@
     "license": "ISC",
     "dependencies": {
         "axios": "^1.7.7",
+        "dotenv": "^16.4.7",
         "express": "^4.21.1",
+        "gnodemon": "^0.0.3",
         "pug": "^3.0.3"
     }
 }
